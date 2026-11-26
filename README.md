@@ -4,11 +4,11 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 ![Status](https://img.shields.io/badge/status-initial_implementation-orange)
-![Validation](https://img.shields.io/badge/runtime-not_tested-lightgrey)
+![Validation](https://img.shields.io/badge/offline_tests-9_passed-brightgreen)
 
 A document reading desk that pairs PDF questions with page-linked source passages. Search locally, or enable a structured LLM answer with quotations you can inspect.
 
-> **Portfolio release:** initial implementation. Runtime, dependencies, and model behavior have not been tested. The commands below describe intended usage, not verified results.
+> **Portfolio release:** 9 offline tests pass on Windows with Python 3.11.9. Local CLI examples and dependency consistency were checked. Live LLM calls and answer quality remain unverified.
 
 ## What you can explore
 
@@ -93,4 +93,14 @@ AGENTS.md          Guidance for future coding work
 
 ## Project notes
 
-Read the [PRD](docs/PRD.md), [design](docs/DESIGN.md), and [delivery status](docs/STATUS.md) for scope and tradeoffs. This release intentionally has no evaluation results or benchmark claims. A license has not been selected; no broad reuse rights are implied.
+Read the [PRD](docs/PRD.md), [design](docs/DESIGN.md), and [delivery status](docs/STATUS.md) for scope and tradeoffs. Offline correctness checks are recorded in the delivery status; no model-quality or performance benchmark is claimed. A license has not been selected; no broad reuse rights are implied.
+
+## Running the offline checks
+
+```powershell
+pip install -e ".[dev]"
+python -m pytest -q
+python -m pip check
+```
+
+Tests use synthetic inputs and block external connections. PageProof permits loopback sockets for Windows asyncio. Model response validation uses local fakes, never a live LLM. Local examples and the test suites do not need an API key.

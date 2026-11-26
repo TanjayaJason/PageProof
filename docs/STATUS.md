@@ -1,19 +1,29 @@
 # Delivery status — PageProof
 
-Initial implementation of the core workflow, CLI, packaging, and documentation is present.
+## Offline validation — 2026-11-26
 
-The first slice uses Streamlit instead of a FastAPI service, and in-memory page chunks instead of SQLite. Documents are not persisted, so session clearing replaces stored-file deletion. Lexical retrieval keeps the offline path inspectable; embeddings and an API are future options. LangChain is used only at the structured model boundary.
+- **9 tests passed**, zero failures or errors.
+- Platform: Windows, Python 3.11.9.
+- Editable installation and `python -m pip check` passed.
+- Installed CLI `--help` and the documented local example passed.
+- Automated tests block external connections; PageProof allows loopback for Windows asyncio. No live LLM call was made.
 
-## Validation
+## Coverage
 
-- Source reviewed statically during implementation.
-- No application runs, dependency installation, automated tests, or model requests performed, per the owner's request.
-- No measured accuracy, latency, benchmark, or production-readiness claims.
-- Dependency ranges are declared but not locked; compatibility remains unverified.
-- `.env` exists locally with empty values and is excluded from version control.
+PDF extraction with page provenance, retrieval and abstention, question/input limits, citation checks with fake responses, CLI JSON/error handling, and a headless Streamlit form submission with an in-memory synthetic upload. The PDF widget/browser itself was not automated.
 
-## Remaining acceptance work
+## Installed versions
 
-Run the documented examples, validate outputs on representative fixtures, and measure the quality criteria in the PRD before marking the MVP accepted. These are future tasks, not completed checks.
+- typer: 0.29.2
+- pydantic: 2.14.4
+- pytest: 9.2.0
+- PyMuPDF: 1.28.2
+- streamlit: 1.67.0
+- langchain-openai: 1.8.5
+- PyYAML: 6.0.4
 
-Static Python AST and TOML parsing passed without importing or running project code. Runtime behavior remains unverified.
+## Practical limits
+
+Live provider compatibility, model accuracy, latency, and cost remain unverified. Test results cover synthetic local inputs on this environment; they do not establish production readiness, exhaustive format coverage, or cross-platform compatibility. Dependency ranges remain unlocked.
+
+The implemented scope and deferred features are recorded in [DESIGN.md](DESIGN.md). `.env` remains local, empty, and ignored by Git.

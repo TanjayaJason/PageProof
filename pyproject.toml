@@ -17,6 +17,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dev = ["pytest>=8,<10"]
 ai = ["langchain-openai>=1,<2"]
 
 [project.scripts]
@@ -24,3 +25,6 @@ pageproof = "pageproof.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
