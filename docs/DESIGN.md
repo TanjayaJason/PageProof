@@ -53,3 +53,13 @@ Keep evaluation fixtures synthetic or public-domain. Track quality separately fr
 3. Add optional model synthesis with bounded context and schema validation.
 4. Add fixtures and evaluation measurements.
 5. Write setup and demo instructions after the workflow is usable.
+
+## 10. Initial implementation decisions
+
+The first slice uses Streamlit instead of a FastAPI service, and in-memory page chunks instead of SQLite. Documents are not persisted, so session clearing replaces stored-file deletion. Lexical retrieval keeps the offline path inspectable; embeddings and an API are future options. LangChain is used only at the structured model boundary.
+
+See [STATUS.md](STATUS.md) for validation status.
+
+Provider integration reference: [LangChain structured output](https://reference.langchain.com/python/langchain-openai/chat_models/base/BaseChatOpenAI/with_structured_output).
+
+Extraction reference: [PyMuPDF text recipes](https://pymupdf.readthedocs.io/en/latest/recipes-text.html).

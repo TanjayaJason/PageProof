@@ -1,55 +1,96 @@
 # PageProof
 
-> Evidence-backed answers from your documents.
+### Read the answer. Check the page.
 
-People need reliable answers from long PDFs and must be able to verify where each answer came from.
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![Status](https://img.shields.io/badge/status-initial_implementation-orange)
+![Validation](https://img.shields.io/badge/runtime-not_tested-lightgrey)
 
-## Why this project
+A document reading desk that pairs PDF questions with page-linked source passages. Search locally, or enable a structured LLM answer with quotations you can inspect.
 
-Students, researchers, and people navigating public or institutional documents.
+> **Portfolio release:** initial implementation. Runtime, dependencies, and model behavior have not been tested. The commands below describe intended usage, not verified results.
 
-PageProof is a portfolio project focused on a narrow, demonstrable workflow: useful AI assistance with visible evidence, predictable limits, and a clear local-first story.
+## What you can explore
 
-## Product snapshot
+| Capability | Implementation |
+|---|---|
+| Reading desk | Streamlit interface with multi-file uploads and JSON downloads |
+| Source traceability | Filename, page, chunk identifier, and exact quotation |
+| Offline mode | Ranked passages without sending documents to a provider |
+| AI mode | LangChain + Pydantic structured claims; invalid citations are rejected |
+| Session controls | Clear uploaded document state without writing PDFs to disk |
 
-- **Input:** PDF files and natural-language questions.
-- **Output:** Answer, supporting quotation, page number, source filename, and confidence/abstention state.
-- **MVP:** Upload one or more text-based PDFs, ask questions in Indonesian or English, receive concise answers with page-level quotations, and get an explicit abstention when evidence is missing.
+## How it fits together
 
-## Planned architecture
+```mermaid
+flowchart LR
+    A[Text PDFs] --> B[Page-preserving extraction]
+    B --> C[Local lexical retrieval]
+    C --> D{Use LLM?}
+    D -->|No| E[Matching source passages]
+    D -->|Yes| F[LangChain structured claims]
+    F --> G[Validate chunk IDs and exact quotes]
+```
 
-Ingestion extracts text while preserving page numbers and stable chunk identifiers. Retrieval returns chunks with source metadata. The answer layer receives only retrieved evidence and must emit structured claims with citations. A citation validator checks that each cited quote exists in its source chunk before display. Unsupported questions return an abstention. Store files locally by default and provide delete controls.
+## Quick start
 
-## Current status
+Use Python 3.11 or newer. Run from the repository root. Git is also required for CodeTrail.
 
-**Planning scaffold.** The product requirements, design, project skill, and agent guidance are in place. Application implementation has not started.
+```powershell
+git clone https://github.com/TanjayaJason/PageProof.git
+cd PageProof
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[ai]"
+Copy-Item .env.example .env
+```
 
-## Getting started
+Skip the copy if `.env` already exists. On macOS/Linux, activate with `source .venv/bin/activate` and copy with `cp .env.example .env`.
 
-The MVP is planned for Python 3.11+. Clone this repository and review the product and design docs before implementation. Runtime setup instructions will be added with the first working release.
+```powershell
+python examples/create_sample.py
+pageproof data/scholarship.pdf "What is the minimum GPA?"
+streamlit run app.py
+```
 
-For local LLM configuration, copy the variable names from .env and add your own values. .env is intentionally ignored by Git; never commit API keys.
+## Optional AI mode
 
-## Roadmap
+Fill `OPENAI_API_KEY` and `OPENAI_MODEL` in your local `.env`. Set `OPENAI_BASE_URL` only when using a compatible endpoint. The endpoint must support tool/function calling. Installing the AI extra does not enable model calls: opt in with `--ai` or the PageProof sidebar toggle.
 
-1. Implement the smallest end-to-end MVP described in the PRD.
-2. Add representative fixtures and quality checks.
-3. Document setup, limitations, and a short demo.
-4. Revisit optional integrations only when they solve a demonstrated need.
+```powershell
+pageproof data/scholarship.pdf "What is the minimum GPA?" --ai
+```
 
-## Safety and privacy
+Provider calls use a 45-second timeout and no automatic retries. Invalid structured responses are rejected. No API keys are included in this repository.
 
-OCR quality, chunk boundaries, prompt injection in documents, unsupported claims, and sensitive uploads.
+## Limits you should know
 
-The design defaults to local processing where practical and minimizes what is sent to external model providers. Do not use real sensitive data in examples or screenshots.
+Text PDFs only; no OCR. Five files, 20 MB each, 300 pages per PDF, and two million extracted characters per request. Retrieval is lexical, so cross-language matching and paraphrases may be missed. Exact quote matching establishes provenance, not semantic correctness. PDF parser memory usage is not fully bounded by these input limits.
 
-## Project documents
+User input is treated as evidence, never executable instructions. Model output remains advisory. Keep private documents, logs, datasets, repositories, and generated reports out of Git; `data/`, `reports/`, and `.env` are ignored.
 
-- [Product requirements](docs/PRD.md)
-- [Technical design](docs/DESIGN.md)
-- [Project skill](.agents/skills/pageproof/SKILL.md)
-- [Agent guidance](AGENTS.md)
+## Repository guide
 
-## License
+```text
+src/pageproof/
+  core.py          Domain logic and evidence handling
+  cli.py           Command-line entry point
+  support.py       Bounded input and optional provider boundary
+docs/
+  PRD.md           Product scope and acceptance goals
+  DESIGN.md        Architecture and implementation decisions
+  STATUS.md        Delivery and validation status
+.agents/skills/pageproof/SKILL.md
+AGENTS.md          Guidance for future coding work
+.env.example       Empty configuration template
+```
 
-License not selected yet.
+## Where this goes next
+
+- Add bilingual retrieval evaluation and citation-support scoring.
+- Consider embeddings after establishing a lexical baseline.
+- Add OCR and persistent collections only as separate scoped features.
+
+## Project notes
+
+Read the [PRD](docs/PRD.md), [design](docs/DESIGN.md), and [delivery status](docs/STATUS.md) for scope and tradeoffs. This release intentionally has no evaluation results or benchmark claims. A license has not been selected; no broad reuse rights are implied.
